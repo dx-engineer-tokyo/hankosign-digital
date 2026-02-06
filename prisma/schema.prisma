@@ -1,0 +1,195 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  name          String
+  nameKana      String?   // Japanese phonetic name
+  password      String
+  companyName   String?
+  corporateNumber String? // 法人番号
+  department    String?
+  position      String?
+  role          Role      @default(USER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  hankos        Hanko[]
+  documents     Document[]
+  signatures    Signature[]
+  approvals     Approval[]
+  
+  @@map("users")
+}
+
+model Hanko {
+  id              String      @id @default(uuid())
+  userId          String
+  name            String      // Hanko name/label
+  type            HankoType
+  imageUrl        String      // URL to hanko image
+  imageData       String      @db.Text // Base64 encoded hanko image
+  font            String?     // Font type (篆書体, etc.)
+  size            Int         @default(60) // Size in pixels
+  isRegistered    Boolean     @default(false) // Jitsuin registered
+  registrationNumber String?  // Municipal registration number
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  signatures      Signature[]
+  
+  @@index([userId])
+  @@map("hankos")
+}
+
+model Document {
+  id              String      @id @default(uuid())
+  title           String
+  description     String?
+  fileUrl         String      // S3 URL
+  fileName        String
+  fileSize        Int
+  mimeType        String
+  status          DocumentStatus @default(DRAFT)
+  createdById     String
+  verificationCode String     @unique // Public verification code
+  qrCodeUrl       String?
+  templateType    String?     // 契約書, 請求書, etc.
+  metadata        Json?       // Additional document metadata
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  completedAt     DateTime?
+  
+  createdBy       User        @relation(fields: [createdById], references: [id])
+  signatures      Signature[]
+  approvals       Approval[]
+  workflow        Workflow?
+  
+  @@index([createdById])
+  @@index([status])
+  @@index([verificationCode])
+  @@map("documents")
+}
+
+model Workflow {
+  id              String      @id @default(uuid())
+  documentId      String      @unique
+  name            String
+  currentStep     Int         @default(0)
+  totalSteps      Int
+  isSequential    Boolean     @default(true)
+  configuration   Json        // Workflow configuration
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  
+  document        Document    @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  approvals       Approval[]
+  
+  @@map("workflows")
+}
+
+model Approval {
+  id              String      @id @default(uuid())
+  workflowId      String
+  documentId      String
+  approverId      String
+  order           Int         // Order in approval chain
+  status          ApprovalStatus @default(PENDING)
+  dueDate         DateTime?
+  completedAt     DateTime?
+  comment         String?
+  isProxy         Boolean     @default(false) // 代理 proxy approval
+  proxyFor        String?     // Original approver if proxy
+  notifiedAt      DateTime?
+  reminderSentAt  DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  
+  workflow        Workflow    @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  document        Document    @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  approver        User        @relation(fields: [approverId], references: [id])
+  signature       Signature?
+  
+  @@index([workflowId])
+  @@index([approverId])
+  @@index([status])
+  @@map("approvals")
+}
+
+model Signature {
+  id              String      @id @default(uuid())
+  documentId      String
+  hankoId         String
+  userId          String
+  approvalId      String?     @unique
+  positionX       Float       // Hanko position on document
+  positionY       Float
+  page            Int         @default(1)
+  timestamp       DateTime    @default(now())
+  ipAddress       String?
+  userAgent       String?
+  certificateData Json?       // PKI certificate info
+  isValid         Boolean     @default(true)
+  createdAt       DateTime    @default(now())
+  
+  document        Document    @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  hanko           Hanko       @relation(fields: [hankoId], references: [id])
+  user            User        @relation(fields: [userId], references: [id])
+  approval        Approval?   @relation(fields: [approvalId], references: [id])
+  
+  @@index([documentId])
+  @@index([userId])
+  @@map("signatures")
+}
+
+model AuditLog {
+  id              String      @id @default(uuid())
+  userId          String?
+  action          String
+  entityType      String      // Document, Hanko, Signature
+  entityId        String
+  details         Json?
+  ipAddress       String?
+  userAgent       String?
+  timestamp       DateTime    @default(now())
+  
+  @@index([entityId])
+  @@index([timestamp])
+  @@map("audit_logs")
+}
+
+enum Role {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum HankoType {
+  MITOMEIN    // 認印 - Acknowledgment seal
+  GINKOIN     // 銀行印 - Bank seal
+  JITSUIN     // 実印 - Registered seal
+}
+
+enum DocumentStatus {
+  DRAFT
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  REJECTED
+  ARCHIVED
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SKIPPED
+}

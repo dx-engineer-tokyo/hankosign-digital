@@ -1,0 +1,39 @@
+# hankosign-digital project services
+# Postgres & Redis are provided by the org-root docker-compose.yml
+# Start shared infra first: docker compose -f ../../docker-compose.yml up -d
+
+services:
+  minio:
+    image: minio/minio:latest
+    container_name: hankosign-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    volumes:
+      - hankosign_minio:/data
+    networks:
+      - dxengineertokyo-network
+
+  minio-init:
+    image: minio/mc:latest
+    container_name: hankosign-minio-init
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 $${MINIO_ROOT_USER:-minioadmin} $${MINIO_ROOT_PASSWORD:-minioadmin} &&
+      mc mb -p local/hankosign-dev || true
+      "
+    networks:
+      - dxengineertokyo-network
+
+volumes:
+  hankosign_minio:
+
+networks:
+  dxengineertokyo-network:
+    external: true
