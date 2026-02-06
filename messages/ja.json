@@ -166,6 +166,7 @@
     "emptyBody": "最初のデジタル判子を作成しましょう",
     "createButton": "判子を作成",
     "confirmDelete": "この判子を削除してもよろしいですか？",
+    "deleteFailed": "判子の削除に失敗しました",
     "createdAt": "作成日: ",
     "registered": "登録済み",
     "types": {

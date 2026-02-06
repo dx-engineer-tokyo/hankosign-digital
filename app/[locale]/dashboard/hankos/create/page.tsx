@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import HankoDesigner from '@/components/HankoDesigner';
+import Alert from '@/components/Alert';
 import { ArrowLeft } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
@@ -14,6 +15,7 @@ export default function CreateHankoPage() {
   const [imageData, setImageData] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<{ name?: string; imageData?: string }>({});
 
   const hankoTypes = [
     { value: 'MITOMEIN', label: t('typeMitomeinLabel'), description: t('typeMitomeinDesc') },
@@ -21,18 +23,38 @@ export default function CreateHankoPage() {
     { value: 'JITSUIN', label: t('typeJitsuinLabel'), description: t('typeJitsuinDesc') },
   ];
 
-  const handleSaveImage = (data: string) => {
-    setImageData(data);
+  const handleNameChange = (value: string) => {
+    setName(value);
+    if (fieldErrors.name && value.trim()) {
+      setFieldErrors(prev => ({ ...prev, name: undefined }));
+    }
   };
 
-  const handleSubmit = async () => {
+  const handleSaveImage = (data: string) => {
+    setImageData(data);
+    if (fieldErrors.imageData && data) {
+      setFieldErrors(prev => ({ ...prev, imageData: undefined }));
+    }
+  };
+
+  const validateForm = (): boolean => {
+    const errors: { name?: string; imageData?: string } = {};
+
     if (!name.trim()) {
-      setError(t('errorName'));
-      return;
+      errors.name = t('errorName');
     }
 
     if (!imageData) {
-      setError(t('errorDesign'));
+      errors.imageData = t('errorDesign');
+    }
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleSubmit = async () => {
+    if (!validateForm()) {
+      setError('');
       return;
     }
 
@@ -83,11 +105,7 @@ export default function CreateHankoPage() {
         </div>
       </div>
 
-      {error && (
-        <div className="border border-red-200 bg-red-50 text-red-700 text-sm rounded-md px-3 py-2">
-          {error}
-        </div>
-      )}
+      {error && <Alert variant="error">{error}</Alert>}
 
       <div className="grid md:grid-cols-2 gap-8">
         {/* Left: Form */}
@@ -102,10 +120,17 @@ export default function CreateHankoPage() {
               <input
                 type="text"
                 placeholder={t('namePlaceholder')}
-                className="border border-gray-300 rounded-md px-3 py-2 text-sm w-full focus:border-hanko-red focus:ring-1 focus:ring-hanko-red"
+                className={`border rounded-md px-3 py-2 text-sm w-full focus:ring-1 ${
+                  fieldErrors.name
+                    ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
+                    : 'border-gray-300 focus:border-hanko-red focus:ring-hanko-red'
+                }`}
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => handleNameChange(e.target.value)}
               />
+              {fieldErrors.name && (
+                <p className="mt-1 text-sm text-red-600">{fieldErrors.name}</p>
+              )}
             </div>
 
             <div className="mt-4">
@@ -131,9 +156,11 @@ export default function CreateHankoPage() {
             </div>
 
             {type === 'JITSUIN' && (
-              <div className="mt-4 border border-blue-200 bg-blue-50 text-blue-700 text-sm rounded-md px-3 py-2">
-                <p className="font-semibold">{t('jitsuinTitle')}</p>
-                <p className="text-sm">{t('jitsuinBody')}</p>
+              <div className="mt-4">
+                <Alert variant="info">
+                  <p className="font-semibold">{t('jitsuinTitle')}</p>
+                  <p className="text-sm mt-1">{t('jitsuinBody')}</p>
+                </Alert>
               </div>
             )}
           </div>
@@ -145,20 +172,23 @@ export default function CreateHankoPage() {
           <div className="mt-4">
             <HankoDesigner onSave={handleSaveImage} />
           </div>
+          {fieldErrors.imageData && (
+            <p className="mt-2 text-sm text-red-600">{fieldErrors.imageData}</p>
+          )}
         </div>
       </div>
 
       <div className="flex justify-end gap-4">
         <Link
           href="/dashboard/hankos"
-          className="bg-white text-gray-700 hover:bg-gray-50 border border-gray-300 rounded-md px-4 py-2 text-sm font-medium"
+          className="bg-white text-gray-700 hover:bg-gray-50 border border-gray-300 rounded-md px-4 py-2 text-sm font-medium text-center"
         >
           {t('cancel')}
         </Link>
         <button
           onClick={handleSubmit}
-          className="bg-hanko-red text-white hover:bg-hanko-ink border border-hanko-red rounded-md px-4 py-2 text-sm font-medium"
-          disabled={isLoading || !imageData}
+          disabled={isLoading}
+          className="bg-hanko-red text-white hover:bg-hanko-ink border border-hanko-red rounded-md px-4 py-2 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed text-center"
         >
           {isLoading ? t('loading') : t('submit')}
         </button>

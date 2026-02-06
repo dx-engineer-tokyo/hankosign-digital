@@ -9,7 +9,7 @@ export async function GET(
     const { code } = await params;
 
     if (!code) {
-      return NextResponse.json({ error: '検証コードが必要です' }, { status: 400 });
+      return NextResponse.json({ error: 'Verification code is required' }, { status: 400 });
     }
 
     const document = await prisma.document.findUnique({
@@ -48,7 +48,7 @@ export async function GET(
     });
 
     if (!document) {
-      return NextResponse.json({ error: '文書が見つかりません' }, { status: 404 });
+      return NextResponse.json({ error: 'Document not found' }, { status: 404 });
     }
 
     // Remove sensitive data
@@ -87,6 +87,6 @@ export async function GET(
     return NextResponse.json({ document: safeDocument });
   } catch (error) {
     console.error('Verify document error:', error);
-    return NextResponse.json({ error: '検証に失敗しました' }, { status: 500 });
+    return NextResponse.json({ error: 'Verification failed' }, { status: 500 });
   }
 }

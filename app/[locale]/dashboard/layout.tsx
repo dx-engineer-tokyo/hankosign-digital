@@ -120,14 +120,14 @@ export default function DashboardLayout({
 
             <Link
               href="/dashboard/hankos/create"
-              className="flex items-center gap-2 bg-hanko-red text-white hover:bg-hanko-ink border border-hanko-red rounded-md px-3 py-2 text-sm font-medium"
+              className="flex justify-center items-center gap-2 bg-hanko-red text-white hover:bg-hanko-ink border border-hanko-red rounded-md px-3 py-2 text-sm font-medium"
             >
               <Plus className="h-4 w-4" />
               {t('createHanko')}
             </Link>
             <Link
               href="/dashboard/documents/new"
-              className="flex items-center gap-2 bg-white text-gray-700 hover:bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm font-medium"
+              className="flex justify-center items-center gap-2 bg-white text-gray-700 hover:bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm font-medium"
             >
               <Plus className="h-4 w-4" />
               {t('uploadDoc')}

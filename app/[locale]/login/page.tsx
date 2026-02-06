@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import HankoIcon from '@/components/HankoIcon';
+import Alert from '@/components/Alert';
 import { useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 
@@ -52,9 +53,7 @@ export default function LoginPage() {
         </p>
 
         {error && (
-          <div className="border border-red-200 bg-red-50 text-red-700 text-sm rounded-md px-3 py-2 mb-4">
-            {error}
-          </div>
+          <Alert variant="error">{error}</Alert>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -89,7 +88,7 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            className="bg-hanko-red text-white hover:bg-hanko-ink border border-hanko-red rounded-md px-4 py-2 text-sm font-medium w-full"
+            className="bg-hanko-red text-white hover:bg-hanko-ink border border-hanko-red rounded-md px-4 py-2 text-sm font-medium w-full text-center"
             disabled={isLoading}
           >
             {isLoading ? t('loading') : t('submit')}

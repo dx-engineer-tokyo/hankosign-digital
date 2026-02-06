@@ -4,14 +4,14 @@ import prisma from '@/lib/prisma';
 import { z } from 'zod';
 
 const registerSchema = z.object({
-  email: z.string().email('有効なメールアドレスを入力してください').max(255),
+  email: z.string().email('Please enter a valid email address').max(255),
   password: z.string()
-    .min(8, 'パスワードは8文字以上である必要があります')
+    .min(8, 'Password must be at least 8 characters')
     .max(128)
-    .regex(/[A-Z]/, 'パスワードには大文字を含めてください')
-    .regex(/[a-z]/, 'パスワードには小文字を含めてください')
-    .regex(/[0-9]/, 'パスワードには数字を含めてください'),
-  name: z.string().min(1, '名前を入力してください').max(100),
+    .regex(/[A-Z]/, 'Password must include uppercase letters')
+    .regex(/[a-z]/, 'Password must include lowercase letters')
+    .regex(/[0-9]/, 'Password must include numbers'),
+  name: z.string().min(1, 'Please enter your name').max(100),
   nameKana: z.string().max(100).optional(),
   companyName: z.string().max(200).optional(),
   department: z.string().max(100).optional(),
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     
     if (existingUser) {
       return NextResponse.json(
-        { error: 'このメールアドレスは既に登録されています' },
+        { error: 'This email address is already registered' },
         { status: 400 }
       );
     }
@@ -59,8 +59,8 @@ export async function POST(request: NextRequest) {
     });
     
     return NextResponse.json(
-      { 
-        message: 'ユーザー登録が完了しました',
+      {
+        message: 'Registration completed successfully',
         user,
       },
       { status: 201 }
@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
     
     console.error('Registration error:', error);
     return NextResponse.json(
-      { error: '登録に失敗しました' },
+      { error: 'Registration failed' },
       { status: 500 }
     );
   }

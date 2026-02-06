@@ -7,7 +7,7 @@ import { generateVerificationCode } from '@/lib/utils';
 import { z } from 'zod';
 
 const documentSchema = z.object({
-  title: z.string().min(1, 'タイトルを入力してください'),
+  title: z.string().min(1, 'Please enter a title'),
   description: z.string().optional(),
   templateType: z.string().optional(),
 });
@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
     const session = await getServerSession(authOptions);
     
     if (!session?.user) {
-      return NextResponse.json({ error: '認証が必要です' }, { status: 401 });
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
     const documents = await prisma.document.findMany({
@@ -45,16 +45,16 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ documents });
   } catch (error) {
     console.error('Get documents error:', error);
-    return NextResponse.json({ error: '文書の取得に失敗しました' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to retrieve documents' }, { status: 500 });
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user) {
-      return NextResponse.json({ error: '認証が必要です' }, { status: 401 });
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
     const formData = await request.formData();
@@ -64,21 +64,21 @@ export async function POST(request: NextRequest) {
     const templateType = formData.get('templateType') as string;
 
     if (!file) {
-      return NextResponse.json({ error: 'ファイルを選択してください' }, { status: 400 });
+      return NextResponse.json({ error: 'Please select a file' }, { status: 400 });
     }
 
     if (!title || title.length > 200) {
-      return NextResponse.json({ error: 'タイトルを入力してください（200文字以内）' }, { status: 400 });
+      return NextResponse.json({ error: 'Please enter a title (200 characters or less)' }, { status: 400 });
     }
 
     if (description && description.length > 2000) {
-      return NextResponse.json({ error: '説明は2000文字以内にしてください' }, { status: 400 });
+      return NextResponse.json({ error: 'Description must be 2000 characters or less' }, { status: 400 });
     }
 
     // Validate file size (max 20MB)
     const MAX_FILE_SIZE = 20 * 1024 * 1024;
     if (file.size > MAX_FILE_SIZE) {
-      return NextResponse.json({ error: 'ファイルサイズは20MB以下にしてください' }, { status: 400 });
+      return NextResponse.json({ error: 'File size must be 20MB or less' }, { status: 400 });
     }
 
     // Validate MIME type
@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
       'image/png',
     ];
     if (!ALLOWED_MIME_TYPES.includes(file.type)) {
-      return NextResponse.json({ error: '許可されていないファイル形式です' }, { status: 400 });
+      return NextResponse.json({ error: 'File format not permitted' }, { status: 400 });
     }
 
     // Read file
@@ -123,23 +123,23 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ document }, { status: 201 });
   } catch (error) {
     console.error('Upload document error:', error);
-    return NextResponse.json({ error: '文書のアップロードに失敗しました' }, { status: 500 });
+    return NextResponse.json({ error: 'Document upload failed' }, { status: 500 });
   }
 }
 
 export async function DELETE(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user) {
-      return NextResponse.json({ error: '認証が必要です' }, { status: 401 });
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
     const documentId = searchParams.get('id');
 
     if (!documentId) {
-      return NextResponse.json({ error: '文書IDが必要です' }, { status: 400 });
+      return NextResponse.json({ error: 'Document ID is required' }, { status: 400 });
     }
 
     // Verify ownership
@@ -151,7 +151,7 @@ export async function DELETE(request: NextRequest) {
     });
 
     if (!document) {
-      return NextResponse.json({ error: '文書が見つかりません' }, { status: 404 });
+      return NextResponse.json({ error: 'Document not found' }, { status: 404 });
     }
 
     // Delete from database (S3 cleanup can be done in background)
@@ -159,9 +159,9 @@ export async function DELETE(request: NextRequest) {
       where: { id: documentId },
     });
 
-    return NextResponse.json({ message: '文書を削除しました' });
+    return NextResponse.json({ message: 'Document deleted successfully' });
   } catch (error) {
     console.error('Delete document error:', error);
-    return NextResponse.json({ error: '文書の削除に失敗しました' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to delete document' }, { status: 500 });
   }
 }

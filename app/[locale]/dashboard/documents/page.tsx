@@ -112,7 +112,7 @@ export default function DocumentsPage() {
         </div>
         <Link
           href="/dashboard/documents/new"
-          className="bg-hanko-red text-white hover:bg-hanko-ink border border-hanko-red rounded-md px-4 py-2 text-sm font-medium inline-flex items-center gap-2"
+          className="bg-hanko-red text-white hover:bg-hanko-ink border border-hanko-red rounded-md px-4 py-2 text-sm font-medium inline-flex items-center justify-center gap-2"
         >
           <Plus className="h-4 w-4" />
           {t('upload')}
@@ -134,7 +134,7 @@ export default function DocumentsPage() {
           </p>
           <Link
             href="/dashboard/documents/new"
-            className="bg-hanko-red text-white hover:bg-hanko-ink border border-hanko-red rounded-md px-4 py-2 text-sm font-medium inline-block"
+            className="bg-hanko-red text-white hover:bg-hanko-ink border border-hanko-red rounded-md px-4 py-2 text-sm font-medium inline-flex items-center justify-center gap-2"
           >
             {t('upload')}
           </Link>

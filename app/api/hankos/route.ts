@@ -8,9 +8,9 @@ import { uploadFile, generateHankoKey } from '@/lib/s3';
 const MAX_IMAGE_DATA_LENGTH = 500_000; // ~375KB decoded, generous for a hanko PNG
 
 const hankoSchema = z.object({
-  name: z.string().min(1, '判子名を入力してください').max(50),
+  name: z.string().min(1, 'Please enter a hanko name').max(50),
   type: z.enum(['MITOMEIN', 'GINKOIN', 'JITSUIN']),
-  imageData: z.string().max(MAX_IMAGE_DATA_LENGTH, '画像データが大きすぎます'),
+  imageData: z.string().max(MAX_IMAGE_DATA_LENGTH, 'Image data is too large'),
   font: z.string().max(100).optional(),
   size: z.number().int().min(20).max(500).default(60),
 });
@@ -18,9 +18,9 @@ const hankoSchema = z.object({
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user) {
-      return NextResponse.json({ error: '認証が必要です' }, { status: 401 });
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
     const hankos = await prisma.hanko.findMany({
@@ -35,16 +35,16 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ hankos });
   } catch (error) {
     console.error('Get hankos error:', error);
-    return NextResponse.json({ error: '判子の取得に失敗しました' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to retrieve hankos' }, { status: 500 });
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user) {
-      return NextResponse.json({ error: '認証が必要です' }, { status: 401 });
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -84,23 +84,23 @@ export async function POST(request: NextRequest) {
     }
 
     console.error('Create hanko error:', error);
-    return NextResponse.json({ error: '判子の作成に失敗しました' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to create hanko' }, { status: 500 });
   }
 }
 
 export async function DELETE(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user) {
-      return NextResponse.json({ error: '認証が必要です' }, { status: 401 });
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
     const hankoId = searchParams.get('id');
 
     if (!hankoId) {
-      return NextResponse.json({ error: '判子IDが必要です' }, { status: 400 });
+      return NextResponse.json({ error: 'Hanko ID is required' }, { status: 400 });
     }
 
     // Verify ownership
@@ -112,7 +112,7 @@ export async function DELETE(request: NextRequest) {
     });
 
     if (!hanko) {
-      return NextResponse.json({ error: '判子が見つかりません' }, { status: 404 });
+      return NextResponse.json({ error: 'Hanko not found' }, { status: 404 });
     }
 
     // Delete from database
@@ -120,9 +120,9 @@ export async function DELETE(request: NextRequest) {
       where: { id: hankoId },
     });
 
-    return NextResponse.json({ message: '判子を削除しました' });
+    return NextResponse.json({ message: 'Hanko deleted successfully' });
   } catch (error) {
     console.error('Delete hanko error:', error);
-    return NextResponse.json({ error: '判子の削除に失敗しました' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to delete hanko' }, { status: 500 });
   }
 }

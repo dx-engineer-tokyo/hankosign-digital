@@ -64,14 +64,14 @@ export default function DashboardPage() {
         <div className="grid md:grid-cols-2 gap-4 mt-4">
           <Link
             href="/dashboard/hankos/create"
-            className="bg-hanko-red text-white hover:bg-hanko-ink border border-hanko-red rounded-md px-4 py-2 text-sm font-medium flex items-center gap-2"
+            className="bg-hanko-red justify-center text-white hover:bg-hanko-ink border border-hanko-red rounded-md px-4 py-2 text-sm font-medium flex items-center gap-2"
           >
             <HankoIcon size={16} />
             {t('createHanko')}
           </Link>
           <Link
             href="/dashboard/documents/new"
-            className="bg-white text-gray-700 hover:bg-gray-50 border border-gray-300 rounded-md px-4 py-2 text-sm font-medium flex items-center gap-2"
+            className="bg-white justify-center text-gray-700 hover:bg-gray-50 border border-gray-300 rounded-md px-4 py-2 text-sm font-medium flex items-center gap-2"
           >
             <FileText className="h-4 w-4" />
             {t('uploadDoc')}

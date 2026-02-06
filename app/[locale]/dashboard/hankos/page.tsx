@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { CheckCircle2, Plus, Trash2 } from 'lucide-react';
 import HankoIcon from '@/components/HankoIcon';
+import Alert from '@/components/Alert';
 import { useTranslations, useLocale } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 
@@ -96,18 +97,14 @@ export default function HankosPage() {
         </div>
         <Link
           href="/dashboard/hankos/create"
-          className="bg-hanko-red text-white hover:bg-hanko-ink border border-hanko-red rounded-md px-4 py-2 text-sm font-medium inline-flex items-center gap-2"
+          className="bg-hanko-red text-white hover:bg-hanko-ink border border-hanko-red rounded-md px-4 py-2 text-sm font-medium inline-flex items-center justify-center gap-2"
         >
           <Plus className="h-4 w-4" />
           {t('create')}
         </Link>
       </div>
 
-      {error && (
-        <div className="border border-red-200 bg-red-50 text-red-700 text-sm rounded-md px-4 py-2">
-          {error}
-        </div>
-      )}
+      {error && <Alert variant="error">{error}</Alert>}
 
       {hankos.length === 0 ? (
         <div className="border border-gray-200 rounded-lg bg-white p-8 text-center">
@@ -118,7 +115,7 @@ export default function HankosPage() {
           </p>
           <Link
             href="/dashboard/hankos/create"
-            className="bg-hanko-red text-white hover:bg-hanko-ink border border-hanko-red rounded-md px-4 py-2 text-sm font-medium inline-block"
+            className="bg-hanko-red text-white hover:bg-hanko-ink border border-hanko-red rounded-md px-4 py-2 text-sm font-medium inline-flex items-center justify-center gap-2"
           >
             {t('createButton')}
           </Link>

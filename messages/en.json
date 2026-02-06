@@ -166,6 +166,7 @@
     "emptyBody": "Create your first digital hanko",
     "createButton": "Create hanko",
     "confirmDelete": "Delete this hanko?",
+    "deleteFailed": "Failed to delete hanko",
     "createdAt": "Created: ",
     "registered": "Registered",
     "types": {

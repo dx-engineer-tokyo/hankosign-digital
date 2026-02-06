@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { ArrowLeft, FileText, Upload } from 'lucide-react';
+import Alert from '@/components/Alert';
 import { useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 
@@ -92,11 +93,7 @@ export default function NewDocumentPage() {
         </div>
       </div>
 
-      {error && (
-        <div className="border border-red-200 bg-red-50 text-red-700 text-sm rounded-md px-3 py-2">
-          {error}
-        </div>
-      )}
+      {error && <Alert variant="error">{error}</Alert>}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="border border-gray-200 rounded-lg bg-white p-6">
@@ -180,13 +177,13 @@ export default function NewDocumentPage() {
         <div className="flex justify-end gap-4">
           <Link
             href="/dashboard/documents"
-            className="bg-white text-gray-700 hover:bg-gray-50 border border-gray-300 rounded-md px-4 py-2 text-sm font-medium"
+            className="bg-white text-gray-700 hover:bg-gray-50 border border-gray-300 rounded-md px-4 py-2 text-sm font-medium text-center"
           >
             {t('cancel')}
           </Link>
           <button
             type="submit"
-            className="bg-hanko-red text-white hover:bg-hanko-ink border border-hanko-red rounded-md px-4 py-2 text-sm font-medium flex items-center gap-2"
+            className="bg-hanko-red text-white hover:bg-hanko-ink border border-hanko-red rounded-md px-4 py-2 text-sm font-medium flex items-center justify-center gap-2"
             disabled={isLoading || !file}
           >
             {!isLoading && <Upload className="h-4 w-4" />}

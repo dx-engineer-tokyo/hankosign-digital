@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     const session = await getServerSession(authOptions);
     
     if (!session?.user) {
-      return NextResponse.json({ error: '認証が必要です' }, { status: 401 });
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -30,13 +30,13 @@ export async function POST(request: NextRequest) {
     });
 
     if (!document) {
-      return NextResponse.json({ error: '文書が見つかりません' }, { status: 404 });
+      return NextResponse.json({ error: 'Document not found' }, { status: 404 });
     }
 
     // Prevent signing documents that are already completed, rejected, or archived
     const NON_SIGNABLE_STATUSES = ['COMPLETED', 'REJECTED', 'ARCHIVED'];
     if (NON_SIGNABLE_STATUSES.includes(document.status)) {
-      return NextResponse.json({ error: 'この文書には署名できません' }, { status: 400 });
+      return NextResponse.json({ error: 'This document cannot be signed' }, { status: 400 });
     }
 
     // Verify hanko belongs to user
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (!hanko) {
-      return NextResponse.json({ error: '判子が見つかりません' }, { status: 404 });
+      return NextResponse.json({ error: 'Hanko not found' }, { status: 404 });
     }
 
     // Create signature
@@ -92,6 +92,6 @@ export async function POST(request: NextRequest) {
     }
 
     console.error('Create signature error:', error);
-    return NextResponse.json({ error: '署名の作成に失敗しました' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to create signature' }, { status: 500 });
   }
 }
