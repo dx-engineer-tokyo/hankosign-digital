@@ -1,0 +1,74 @@
+# Project Metadata
+# HankoSign Digital (判子サイン・デジタル)
+
+name: hankosign-digital
+version: 0.1.0
+status: complete
+license: MIT
+
+# GitHub
+description: "Japan's Digital Hanko & E-Signature Platform — Transform traditional hanko (stamp) workflows into legally-compliant digital signatures. Full-stack Next.js app with custom hanko designer, document signing flows, RBAC, and i18n (EN/JA)."
+homepage: https://github.com/DxEngineerTokyo/hankosign-digital
+topics:
+  - nextjs
+  - typescript
+  - react
+  - prisma
+  - postgresql
+  - redis
+  - docker
+  - tailwindcss
+  - daisyui
+  - fabricjs
+  - digital-signature
+  - e-signature
+  - hanko
+  - japan
+  - i18n
+  - next-intl
+  - next-auth
+  - rbac
+  - s3
+  - full-stack
+
+# Project Context
+series: "Mission 100 by AI"
+day: 2
+category: full-stack
+language: TypeScript
+framework: Next.js 16 (App Router)
+
+# Tech Stack
+stack:
+  frontend:
+    - React 19
+    - Next.js 16
+    - Tailwind CSS 3
+    - DaisyUI 4
+    - Fabric.js 7 (canvas / hanko designer)
+    - Chart.js 4 (dashboard analytics)
+    - react-hook-form + zod (form validation)
+    - next-intl (i18n — English & Japanese)
+  backend:
+    - Next.js API Routes
+    - NextAuth.js (authentication + RBAC)
+    - Prisma 5 (ORM)
+    - Nodemailer (transactional email)
+  database:
+    - PostgreSQL 14
+    - Redis (caching)
+  storage:
+    - AWS S3 (document & hanko storage)
+  infrastructure:
+    - Docker / Docker Compose
+
+# Key Features
+features:
+  - Custom hanko stamp designer (canvas-based)
+  - Document upload, signing & verification
+  - Multi-step signing flow with approval chains
+  - Role-based access control (Admin, Manager, Employee)
+  - Bilingual UI (English / Japanese)
+  - Dashboard with analytics
+  - QR code verification for signed documents
+  - Email notifications
